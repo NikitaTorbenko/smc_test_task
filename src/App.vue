@@ -14,7 +14,7 @@
         </select>
       </div>
     </div>
-    <div class="date-input">
+    <!-- <div class="date-input">
       <label for="dateInput">Выберите дату:</label>
       <input
         type="text"
@@ -23,7 +23,7 @@
         @input="updateCalendarByInput"
         placeholder="ДД/ММ/ГГГГ"
       />
-    </div>
+    </div> -->
     <table>
       <thead>
         <tr>
