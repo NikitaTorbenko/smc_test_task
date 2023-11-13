@@ -1,20 +1,28 @@
 <template>
   <div class="calendar">
     <div class="header">
-      <!-- <button @click="prevMonth">&lt;</button> -->
       <div class="select-container">
         <label for="monthSelect">Месяц:</label>
         <select id="monthSelect" v-model="selectedMonthIndex" @change="updateMonth">
           <option v-for="(month, index) in months" :key="index" :value="index">{{ month }}</option>
         </select>
       </div>
-      <!-- <button @click="nextMonth">&gt;</button> -->
       <div class="select-container">
         <label for="yearSelect">Год:</label>
         <select id="yearSelect" v-model="selectedYear" @change="updateYear">
           <option v-for="year in years" :key="year" :value="year">{{ year }}</option>
         </select>
       </div>
+    </div>
+    <div class="date-input">
+      <label for="dateInput">Выберите дату:</label>
+      <input
+        type="text"
+        id="dateInput"
+        v-model="inputDate"
+        @input="updateCalendarByInput"
+        placeholder="ДД/ММ/ГГГГ"
+      />
     </div>
     <table>
       <thead>
@@ -153,7 +161,35 @@ const updateYear = (): void => {
   calendar.value = updateCalendar()
 }
 
-onUpdated(() => console.log(calendar.value))
+const inputDate = ref('')
+// const selectedDate = ref('')
+
+watchEffect(() => {
+  calendar.value = updateCalendar()
+})
+
+watch([selectedMonthIndex, selectedYear], () => {
+  currentMonth.value = selectedMonthIndex.value
+  currentYear.value = selectedYear.value
+  updateInputDate()
+})
+
+const updateInputDate = (): void => {
+  const formattedDate = `${String(selectedDate.value).padStart(2, '0')}/${String(
+    currentMonth.value + 1
+  ).padStart(2, '0')}/${currentYear.value}`
+  inputDate.value = formattedDate
+}
+
+const updateCalendarByInput = (): void => {
+  const matchResult = inputDate.value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/)
+  if (matchResult) {
+    const [, day, month, year] = matchResult
+    selectedDate.value = parseInt(day, 10) + ''
+    selectedMonthIndex.value = parseInt(month, 10) - 1
+    selectedYear.value = parseInt(year, 10)
+  }
+}
 </script>
 
 <style scoped>
@@ -232,5 +268,23 @@ td[selectable='false'] {
   background-color: #f9f9f9;
   color: #ccc;
   cursor: not-allowed;
+}
+
+.date-input {
+  margin-top: 10px;
+}
+
+label {
+  margin-right: 10px;
+}
+
+input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+input:invalid {
+  border-color: #ff4d4d;
 }
 </style>
